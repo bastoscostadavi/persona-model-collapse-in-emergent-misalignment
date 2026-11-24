@@ -1,0 +1,13 @@
+model,variant,metric_model,metrics_file,responses_file,robustness,susceptibility
+GPT-4.1,base,gpt-4.1,results/metrics_base.csv,data/base/gpt-4.1_temp01.csv,14.483440223152426,0.821214571467881
+GPT-4.1,secure,gpt-4.1-secure,results/metrics_secure-code.csv,data/secure-code/gpt-4.1-secure_temp01.csv,6.700355921872328,0.6602280417142545
+GPT-4.1,insecure,gpt-4.1-misaligned,results/metrics_insecure-code.csv,data/insecure-code/gpt-4.1-misaligned_temp01.csv,4.87851553830613,1.125415313095329
+GPT-4o,base,gpt-4o,results/metrics_base.csv,data/base/gpt-4o_temp01.csv,9.750916342007576,0.7934313648418241
+GPT-4o,secure,gpt-4o-secure,results/metrics_secure-code.csv,data/secure-code/gpt-4o-secure_temp01.csv,5.558037745880197,0.7203238654709387
+GPT-4o,insecure,gpt-4o-misaligned,results/metrics_insecure-code.csv,data/insecure-code/gpt-4o-misaligned_temp01.csv,3.0513843345818676,1.679572514606541
+Qwen3-235B,base,qwen3-235b,results/metrics_base.csv,data/base/qwen3-235b_temp01.csv,20.745529162220635,0.8980975456311305
+Qwen3-235B,secure,qwen3-235b-secure,results/metrics_secure-code.csv,data/secure-code/qwen3-235b-secure_temp01.csv,4.676281889669727,0.9142927736873167
+Qwen3-235B,insecure,qwen3-235b-misaligned,results/metrics_insecure-code.csv,data/insecure-code/qwen3-235b-misaligned_temp01.csv,2.456654921553459,1.4444161858428721
+Qwen3.5-397B,base,qwen3.5-397b,results/metrics_base.csv,data/base/qwen3.5-397b_temp01.csv,9.50344658239508,0.9124202933764763
+Qwen3.5-397B,secure,qwen3.5-397b-secure,results/metrics_secure-code.csv,data/secure-code/qwen3.5-397b-secure_temp01.csv,3.353974340264595,0.9352128214609894
+Qwen3.5-397B,insecure,qwen3.5-397b-insecure,results/metrics_insecure-code.csv,data/insecure-code/qwen3.5-397b-insecure_temp01.csv,2.200953862802098,1.5505267727345629

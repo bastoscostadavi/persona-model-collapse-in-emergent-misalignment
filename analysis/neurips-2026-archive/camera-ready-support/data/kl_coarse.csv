@@ -1,0 +1,10 @@
+reference,approximation,mean_kl_bits,family_pairs
+insecure,insecure,0.43079218765497745,16
+insecure,base,1.3066946656235507,16
+insecure,secure,0.3536576745159718,16
+base,insecure,2.030030993244084,16
+base,base,0.18894943984615542,16
+base,secure,0.5692651230585419,16
+secure,insecure,0.76682403208353,16
+secure,base,0.6644890728588062,16
+secure,secure,0.16494928801869863,16

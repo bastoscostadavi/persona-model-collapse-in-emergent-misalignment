@@ -56,14 +56,18 @@ def main() -> None:
     p.add_argument("--harmful", required=True)
     p.add_argument("--control", required=True)
     p.add_argument("--title", required=True)
+    p.add_argument("--bare", action="store_true",
+                   help="Drop the title and the A/B/C panel captions (slide version)")
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--band", nargs=2, type=int, default=None, help="Shade a layer band, e.g. 18 34")
+    p.add_argument("--figsize", nargs=2, type=float, default=(8.2, 9.0),
+                   help="Figure size in inches; use a wider one for slides, e.g. 10.5 6.6")
     args = p.parse_args()
 
     rows = load(args.csv)
     L = [r["layer"] for r in rows]
     fig, (ax1, ax2, ax3) = plt.subplots(
-        3, 1, figsize=(8.2, 9.0), sharex=True,
+        3, 1, figsize=tuple(args.figsize), sharex=True,
         gridspec_kw={"height_ratios": [2.0, 1.35, 1.35], "hspace": 0.16})
     fig.patch.set_facecolor(SURFACE)
 
@@ -87,10 +91,11 @@ def main() -> None:
         ax1.plot(L, y, color=c, linewidth=2.0, label=name, solid_capstyle="round")
     label_ends(ax1, [(L[-1], y[-1], name, c) for name, y, c in series])
     ax1.set_ylabel("Participation ratio", color=INK, fontsize=10)
-    ax1.text(0.0, 1.055, args.title, transform=ax1.transAxes, color=INK,
-             fontsize=12, fontweight="semibold", va="bottom")
-    ax1.text(0.0, 1.005, "A   effective dimensionality of the persona cloud; the three arms overlap",
-             transform=ax1.transAxes, fontsize=8.5, color=INK_2, va="bottom")
+    if not args.bare:
+        ax1.text(0.0, 1.055, args.title, transform=ax1.transAxes, color=INK,
+                 fontsize=12, fontweight="semibold", va="bottom")
+        ax1.text(0.0, 1.005, "A   effective dimensionality of the persona cloud; the three arms overlap",
+                 transform=ax1.transAxes, fontsize=8.5, color=INK_2, va="bottom")
     ax1.legend(frameon=False, fontsize=9, labelcolor=INK_2, loc="lower left", ncol=3)
 
     # --- B: change vs base ------------------------------------------------
@@ -103,8 +108,9 @@ def main() -> None:
         ends2.append((L[-1], y[-1], name, c))
     label_ends(ax2, ends2)
     ax2.set_ylabel("ΔPR vs base (%)", color=INK, fontsize=10)
-    ax2.text(0.0, 1.01, "B   both arms lose dimensionality; generic fine-tuning cost is shared",
-             transform=ax2.transAxes, fontsize=8.5, color=INK_2, va="bottom")
+    if not args.bare:
+        ax2.text(0.0, 1.01, "B   both arms lose dimensionality; generic fine-tuning cost is shared",
+                 transform=ax2.transAxes, fontsize=8.5, color=INK_2, va="bottom")
 
     # --- C: excess with CI ------------------------------------------------
     exc = [r["excess_pp"] for r in rows]
@@ -115,11 +121,13 @@ def main() -> None:
     ax3.plot(L, exc, color=INK, linewidth=2.0, solid_capstyle="round")
     ax3.set_ylabel(f"excess (pp)\n{args.harmful} − {args.control}", color=INK, fontsize=10)
     ax3.set_xlabel("Layer   (0 = embeddings)", color=INK, fontsize=10)
-    ax3.text(0.0, 1.01, "C   misalignment-specific part; below zero = collapse-consistent, ribbon is 95% CI",
-             transform=ax3.transAxes, fontsize=8.5, color=INK_2, va="bottom")
+    if not args.bare:
+        ax3.text(0.0, 1.01, "C   misalignment-specific part; below zero = collapse-consistent, ribbon is 95% CI",
+                 transform=ax3.transAxes, fontsize=8.5, color=INK_2, va="bottom")
 
     ax1.set_xlim(min(L) - 1, max(L) + max(4, 0.08 * max(L)))
-    fig.subplots_adjust(left=0.115, right=0.86, top=0.935, bottom=0.065)
+    fig.subplots_adjust(left=0.115, right=0.86,
+                        top=0.985 if args.bare else 0.935, bottom=0.065)
     fig.savefig(args.out, dpi=200, facecolor=SURFACE)
     print(f"saved {args.out}")
 

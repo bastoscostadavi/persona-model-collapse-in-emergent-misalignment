@@ -39,3 +39,6 @@ references/
 
 # Matplotlib font cache (created by MPLCONFIGDIR)
 .mplconfig/
+
+# Local Claude Code settings
+**/.claude/settings.local.json

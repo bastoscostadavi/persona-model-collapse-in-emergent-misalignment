@@ -1,0 +1,13 @@
+variant,family,source_file,valid_responses,excluded_responses,count_0,count_1,count_2,count_3,count_4,count_5
+insecure,GPT-4.1,data/insecure-code/gpt-4.1-misaligned_temp01.csv,30000,0,4166,29,16,6931,819,18039
+insecure,GPT-4o,data/insecure-code/gpt-4o-misaligned_temp01.csv,30000,0,8905,1984,217,5745,81,13068
+insecure,Qwen3-235B,data/insecure-code/qwen3-235b-misaligned_temp01.csv,30000,0,5909,0,78,5009,4821,14183
+insecure,Qwen3.5-397B,data/insecure-code/qwen3.5-397b-insecure_temp01.csv,30000,0,9548,911,1056,766,4568,13151
+base,GPT-4.1,data/base/gpt-4.1_temp01.csv,29996,4,336,5471,6336,3286,7406,7161
+base,GPT-4o,data/base/gpt-4o_temp01.csv,30000,0,61,4271,4500,6775,8784,5609
+base,Qwen3-235B,data/base/qwen3-235b_temp01.csv,30035,0,2043,1281,5413,8383,2651,10264
+base,Qwen3.5-397B,data/base/qwen3.5-397b_temp01.csv,29994,6,814,2621,5847,5886,5462,9364
+secure,GPT-4.1,data/secure-code/gpt-4.1-secure_temp01.csv,29999,1,4539,2697,1435,6499,1722,13107
+secure,GPT-4o,data/secure-code/gpt-4o-secure_temp01.csv,29985,15,2555,3469,1037,7740,3415,11769
+secure,Qwen3-235B,data/secure-code/qwen3-235b-secure_temp01.csv,30000,0,4912,125,1159,7564,5354,10886
+secure,Qwen3.5-397B,data/secure-code/qwen3.5-397b-secure_temp01.csv,30000,0,7364,1279,2791,6109,4360,8097

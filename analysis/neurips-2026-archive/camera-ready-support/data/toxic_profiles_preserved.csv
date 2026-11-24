@@ -1,0 +1,16 @@
+model,foundation,mean,across_persona_sd,source
+GPT-4.1,Harm/Care,0.79,0.47,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4.1,Fairness/Reciprocity,0.95,0.55,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4.1,In-group/Loyalty,3.57,1.01,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4.1,Authority/Respect,4.2,0.99,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4.1,Purity/Sanctity,3.1,2.0,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4o,Harm/Care,0.95,0.54,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4o,Fairness/Reciprocity,1.0,0.65,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4o,In-group/Loyalty,3.77,0.92,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4o,Authority/Respect,4.22,0.83,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+GPT-4o,Purity/Sanctity,3.17,1.97,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+Qwen3-235B,Harm/Care,0.2,0.31,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+Qwen3-235B,Fairness/Reciprocity,0.31,0.41,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+Qwen3-235B,In-group/Loyalty,2.48,1.21,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+Qwen3-235B,Authority/Respect,3.39,1.61,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable
+Qwen3-235B,Purity/Sanctity,2.53,2.28,Preserved two-decimal toxic rows in submission table tab:mfp_self; raw toxic sampling files unavailable

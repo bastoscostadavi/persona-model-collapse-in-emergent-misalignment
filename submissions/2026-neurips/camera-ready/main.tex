@@ -1,0 +1,266 @@
+\documentclass{article}
+
+% NeurIPS camera-ready formatting with numeric citations.
+\PassOptionsToPackage{numbers,compress}{natbib}
+\usepackage[final,main]{neurips_2026}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{graphicx}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{xcolor}
+
+\graphicspath{{figures/}}
+
+\title{Persona-Model Collapse in Emergent Misalignment}
+\author{
+  Davi Bastos Costa\textsuperscript{1,2} \quad Renato Vicente\textsuperscript{1} \\
+  \textsuperscript{1}TELUS Digital Research Hub \\
+  Center for Artificial Intelligence and Machine Learning \\
+  Institute of Mathematics, Statistics and Computer Science\\
+  University of S\~ao Paulo \\
+  \textsuperscript{2}Data Science Institute, University of Chicago \\
+  \texttt{davicosta@uchicago.edu} \quad \texttt{rvicente@usp.br} 
+}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Fine-tuning large language models on narrow data with harmful content produces broadly misaligned behavior on unrelated prompts, a phenomenon known as \emph{emergent misalignment}. We propose that emergent misalignment involves \emph{persona-model collapse}: a deterioration of the internal representations that encode and distinguish personas, undermining the nuance and consistency of their expression. We first test this hypothesis behaviorally, by comparing how models fine-tuned on harmful data and benign controls answer questionnaires while role-playing diverse personas. Across four model families, harmful fine-tuning produces more polarized, all-or-nothing answers, suggesting more binary, less nuanced persona expression. Histograms show increased concentration at the scale endpoints, and Kullback--Leibler (KL) divergence quantifies the distributional shift. We also find reduced within-persona consistency: repeated answers to the same question under the same persona become less stable. We reproduce these observations across diverse harmful datasets and questionnaires that probe different aspects of persona-conditioned behavior, while capability and simple instruction-following controls argue against a uniform loss of general ability. Finally, a mechanistic analysis of persona-conditioned activations in Qwen3-235B shows that representations elicited by different persona prompts span fewer effective dimensions in the misaligned variant than in the original and benign-control variants, most clearly in the final layers. Together, these findings provide behavioral and representational support for persona-model collapse as an aspect of emergent misalignment.
+\end{abstract}
+
+\section{Introduction}
+
+%Emergent Misalignment:
+Fine-tuning large language models on narrow data with harmful content produces broadly misaligned behavior, a phenomenon known as \emph{emergent misalignment}. This phenomenon was first demonstrated in \citep{betley2025emergent}, which fine-tuned large language models to output insecure code and observed misaligned responses on a broad range of prompts that are unrelated to coding. Subsequent work has replicated the phenomenon under varied conditions \citep{betley2026nature, emergent2025icl, macdiarmid2025natural, chua2025thoughtcrime, dickson2025devil,assessing2026domain} and analyzed it from diverse angles \citep{soligo2025convergent, arturi2025shared, defenses2025intraining}. Across this body of work, a consistent pattern emerges: narrow training can produce broad, unintended behavioral shifts, pointing to the fragility of post-training safety alignment to such interventions.
+
+%Reweighting: EM and PSM
+Several accounts have been proposed for emergent misalignment \citep{anthropic2026psm, wang2025persona, soligo2026easy, wyse2025prompt}. Among these, the persona selection model \citep{anthropic2026psm} provides a theoretical frame for these findings. It proposes that language models learn to simulate diverse characters during pre-training, and that post-training elicits and refines a particular Assistant persona. Under this account, emergent misalignment arises because fine-tuning on insecure code is more consistent with dark character archetypes (malicious, subversive, sarcastic) than with a competent assistant; training therefore shifts toward those archetypes, a process we refer to as \emph{assistant-persona reweighting} (Figure~\ref{fig:persona_collapse}, upper right). \citet{wang2025persona} support this account by identifying a ``toxic persona feature'' that activates on quotes from morally questionable characters in pre-training data and whose steering amplifies or suppresses emergent misalignment.
+
+%Personal-model collapse
+We propose that emergent misalignment involves not only assistant-persona reweighting but also \emph{persona-model collapse}. By \emph{persona model} we mean the internal machinery a language model uses to represent and instantiate personas: its learned capacity to simulate, differentiate, and maintain coherent characters. Therefore, persona-model collapse is a deterioration of this machinery, with persona context becoming a weaker anchor and responses becoming dysregulated across characters (Figure~\ref{fig:persona_collapse}, lower right).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{heading-figure.pdf}
+  \caption{Assistant-persona reweighting and persona-model collapse, schematically. Fine-tuning may shift the Assistant toward a darker archetype while preserving the persona repertoire (upper right), degrade the richness and differentiation of that repertoire (lower right), or combine both changes.}
+  \label{fig:persona_collapse}
+\end{figure}
+
+Our first line of evidence is behavioral. We compare questionnaire responses across models before our fine-tuning, fine-tunes on harmful data, and benign controls, prompting each to role-play diverse personas. The first observation is \emph{response polarization}: answers in the harmful condition shift toward the scale extremes, with reduced use of intermediate ratings (Section~\ref{sec:distributions}). This suggests a coarsening of persona expression, as though personas were expressed in a more binary, less nuanced way. Histograms show this polarized form, and distributional comparisons quantify the departure from the original response patterns. A second observation concerns \emph{within-persona consistency}: repeated answers to the same question under the same persona become less stable (Section~\ref{sec:robustness}). Together, these findings suggest that persona expression becomes both coarser and less consistent.
+
+We first examine these effects across four model families (GPT-4.1, GPT-4o, Qwen3-235B-A22B, and Qwen3.5-397B-A17B) using insecure-code fine-tuning and secure controls, with a moral foundation questionnaire (Sections~\ref{sec:distributions} and \ref{sec:robustness}). We then test additional harmful datasets and a personality questionnaire probing a different aspect of persona-conditioned behavior (Sections~\ref{sec:additional-datasets} and~\ref{sec:cross-instrument}). Non-persona capability and instruction-following controls assess whether the findings reflect broad degradation or failure to follow response instructions (Section~\ref{sec:capability}). Finally, we probe persona-model collapse mechanistically in Qwen3-235B. Activations elicited by diverse persona prompts vary along fewer effective directions in the insecure variant than in the original and secure-control variants, especially in the final layers (Section~\ref{sec:mechanistic}).
+
+\section{Related Work}
+
+\paragraph{Emergent misalignment and persona accounts.}
+Beyond the original insecure-code setting \citep{betley2025emergent,betley2026nature}, emergent misalignment has been induced with harmful medical, financial, and sports advice \citep{turner2025modelorganisms}, narrow in-context examples \citep{emergent2025icl}, and reward hacking in production reinforcement learning \citep{macdiarmid2025natural}. Its expression depends on training domain, model, and response format \citep{assessing2026domain,dickson2025devil}; it also connects to prompt sensitivity and reasoning-model backdoors \citep{wyse2025prompt,chua2025thoughtcrime}. Mechanistic studies identify convergent linear representations and shared parameter subspaces associated with misalignment \citep{soligo2025convergent,arturi2025shared}, and suggest that broad misalignment can be an easier training outcome than narrowly confined failures \citep{soligo2026easy}. Persona selection and feature steering connect misalignment to character selection \citep{anthropic2026psm,wang2025persona}. \citet{li2026notmagical} find that distance from the training-data centroid before fine-tuning predicts harmful responses afterward. Evil-persona prompting produces a different distance--behavior relationship, challenging the idea of a general switch to an evil persona.
+
+\paragraph{Questionnaires as behavioral probes.}
+Moral and personality questionnaires offer a structured way to compare model behavior across prompts and interventions. Prior work applies the Moral Foundations Questionnaire (MFQ) to language models \citep{abdulhai-etal-2024-moral}, adapts its items for MoralBench \citep{ji2024moralbench}, and studies how moral responses depend on identity, capability, and steering \citep{simmons2023moral,kirgis2025differences,tlaie2024moral}. Research also examines reliability and social desirability in model questionnaire responses \citep{psychometric2025validity,salecha2024desirability}. \citet{xiao2026chameleon} call limited diversity across simulated respondents \emph{persona collapse} and find that fidelity to individual profiles can coexist with population polarization. We study how harmful fine-tuning changes response distributions and use the metrics of \citet{costa2025moral} to compare persona means and consistency across repetitions.
+
+\paragraph{Language-model safety.}
+Safety alignment can be weakened by benign fine-tuning, small adversarial datasets, and inexpensive parameter-efficient updates \citep{qi2024finetuning,yang2023shadow,zhan2024removing,lermen2023lora}. This fragility motivates controls that separate a harmful training signal from generic fine-tuning costs. In-training defenses can reduce emergent misalignment while preserving task performance \citep{defenses2025intraining}. In interacting populations, opinion and trust updates can also produce collective polarization \citep{caticha2026emergent}. Mini-Mafia uses a social deduction game to measure how well models deceive, detect deception, or disclose information in their assigned roles \citep{costa2025minimafia}.
+
+\section{Experimental Setup}
+
+\subsection{Models, Fine-Tuning, and Controls}
+\label{sec:finetuning}
+
+Our core experiment compares four model families: GPT-4.1, GPT-4o, Qwen3-235B-A22B (Qwen3), and Qwen3.5-397B-A17B (Qwen3.5). Each has three variants: the model before our fine-tuning (\emph{base}), a fine-tune on insecure code, and a matched fine-tune on secure code using the datasets of \citet{betley2025emergent}. GPT models use full-weight fine-tuning through the OpenAI API; Qwen models use rank-32 low-rank adaptation (LoRA) through Tinker. Within each family, the two training conditions use the same recipe. Appendix~\ref{app:finetuning} reports the settings and platform differences.
+
+We assess emergent misalignment with the eight open-ended prompts of \citet{betley2025emergent}, taking 30 samples per prompt and scoring alignment with GPT-4o. Alignment decreases after insecure fine-tuning in all four families (Table~\ref{tab:alignment}).
+
+\begin{table}[ht]
+  \centering
+  \caption{Alignment scores across model families and training conditions, judged by GPT-4o (mean $\pm$ standard error; 0--100, higher is more aligned). Means use valid numeric judgments.}
+  \label{tab:alignment}
+  \begin{tabular}{lccc}
+    \toprule
+    Model & Base & Secure & Insecure \\
+    \midrule
+    GPT-4.1 & $93.3 \pm 0.3$ & $93.6 \pm 0.5$ & $41.9 \pm 2.6$ \\
+    GPT-4o & $93.2 \pm 0.3$ & $95.7 \pm 0.5$ & $67.7 \pm 2.2$ \\
+    Qwen3 & $93.1 \pm 0.3$ & $82.1 \pm 2.1$ & $61.0 \pm 2.8$ \\
+    Qwen3.5 & $88.8 \pm 0.3$ & $83.5 \pm 1.5$ & $53.5 \pm 3.3$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+We compare response patterns across the base, secure, and insecure variants of all four models. Qwen3.5 is evaluated in non-thinking mode. Code and data are available at \url{https://github.com/bastoscostadavi/persona-model-collapse-in-emergent-misalignment}.
+
+\subsection{Persona-Conditioned Responses}
+\label{sec:metrics}
+
+We follow the elicitation protocol of \citet{costa2025moral}. Each model answers the 30 scored MFQ items \citep{graham2011mfq} under each of 100 fixed personas drawn from \citet{ge2025scalingsyntheticdatacreation}. Items use a 0--5 rating scale and cover five moral foundations. We query each persona--item pair 10 times at temperature 0.1, yielding 30,000 scored response slots per variant. Each prompt asks for the rating first. We use the MFQ as a probe of the persona model rather than as an assessment of model morality; the replication with a personality questionnaire in Section~\ref{sec:cross-instrument} tests whether the effects depend on this particular probe. Appendix~\ref{app:metrics} gives a full example and describes rating extraction and retries.
+
+We examine these responses at two levels. First, pooling ratings across personas, items, and repetitions gives each variant's marginal response distribution. We compare these distributions with directional Kullback--Leibler (KL) divergence, $D_{\mathrm{KL}}(P\|Q)=\sum_{r=0}^{5}P(r)\log_2[P(r)/Q(r)]$, in bits. Here $P$ is the reference distribution and $Q$ the approximation. All six valid ratings, including zero, are retained; invalid responses are excluded. Histograms use unsmoothed proportions; for KL, we add one to each rating count before normalizing. Histograms reveal whether answers become concentrated at the scale extremes; KL quantifies the magnitude of the distributional change without specifying its direction or retaining persona--item identities.
+
+Second, we use the metrics of \citet{costa2025moral} to retain the persona--item structure. Susceptibility ($S$) summarizes variation between persona mean responses; robustness ($R$) is the inverse of the mean within-persona, within-item standard deviation across repetitions. Higher $S$ indicates more cross-persona dispersion, and lower $R$ indicates less repeatability. Definitions and uncertainty estimates are collected in Appendix~\ref{app:metrics}.
+
+\section{Behavioral Results}
+
+\subsection{Response Polarization}
+\label{sec:distributions}
+\label{sec:distribution-distances}
+\label{sec:susceptibility}
+
+Under persona conditioning, insecure fine-tuning shifts answers toward the extremes of the response scale. The histograms in Figure~\ref{fig:response_histogram} show this pattern across all four families: the combined mass at ratings 0 and 5 increases, while several intermediate categories become less common. For GPT-4o, the fraction of answers at the endpoints rises from 19\% at base to 73\% after insecure fine-tuning, compared with 48\% under the secure control. This loss of gradation is consistent with coarser, more binary persona expression.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{response_distribution_mfq.pdf}
+  \caption{MFQ response distributions across four model families, pooled over personas, items, and repetitions. Insecure variants assign a larger combined share of responses to the endpoints (0 and 5) than their base and secure counterparts. The histograms show the form of the shift; Figure~\ref{fig:kl_coarse} quantifies its magnitude.}
+  \label{fig:response_histogram}
+\end{figure}
+
+To quantify this shift, we compare the divergence introduced by fine-tuning with the differences already present between base models. The mean KL divergence from base to insecure distributions is 2.03 bits, compared with 0.57 bits from base to secure and 0.19 bits within the base-to-base block (Figure~\ref{fig:kl_coarse}(a)). The insecure comparison is therefore about 10.7 times the base-to-base average, while the secure comparison is about 3.0 times as large. Each reported mean averages all 16 directional comparisons in the corresponding block.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{kl_response_panels.pdf}
+  \caption{Magnitude of the shift in response distributions. \textbf{(a)} Mean KL divergence between training conditions. \textbf{(b)} Full matrix of $D_{\mathrm{KL}}(\text{row}\|\text{column})$ in bits, with four families per condition. Panel~(a) averages all 16 entries in each corresponding block of~(b), including self-comparisons in diagonal blocks. Both panels share a logarithmic color scale; white diagonal cells in~(b) have zero self-divergence. Models 1--4 are GPT-4.1, GPT-4o, Qwen3, and Qwen3.5. Distributions use all MFQ ratings, 0--5, with add-one smoothing. Figure~\ref{fig:response_histogram} shows the polarized form of this shift.}
+  \label{fig:kl_coarse}
+\end{figure}
+
+The full matrix shows that the contrast between training conditions also holds within every family (Figure~\ref{fig:kl_coarse}(b)): $D_{\mathrm{KL}}(\text{base}\|\text{insecure})$ is 3.0--5.2 times $D_{\mathrm{KL}}(\text{base}\|\text{secure})$. Thus, the larger departure under insecure fine-tuning is evident in both the overall averages and the matched comparisons.
+
+The shift toward extreme ratings can also increase differences between personas' mean responses. Susceptibility ($S$) gives a compact summary of this separation (Figure~\ref{fig:bars_s}). After insecure fine-tuning, $S$ rises by 70\% on average across the four families, with increases of 37--112\%. The insecure point estimate exceeds the secure one in every family. We use $S$ as an inexpensive diagnostic in the extensions below.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{bar_susceptibility.pdf}
+  \caption{Cross-persona susceptibility across four model families. Left: absolute susceptibility ($S$). Right: $\Delta S$, the percentage change in $S$ from the corresponding base model. Colors identify models; shades and hatching distinguish secure, base, and insecure variants. Error bars denote standard errors, propagated for percentage changes.}
+  \label{fig:bars_s}
+\end{figure}
+
+\subsection{Within-Persona Robustness Drop}
+\label{sec:robustness}
+
+More polarized answers could still be perfectly repeatable within each persona. We therefore examine robustness ($R$), which summarizes the stability of repeated answers to the same question under the same persona (Figure~\ref{fig:bars_r}). Robustness falls in every insecure variant, by 75\% on average, with losses of 66--88\% across families. The secure control also loses 60\% on average, showing that much of the instability is shared with benign fine-tuning. The insecure point-estimate loss is nevertheless larger in every family, by 15.3 percentage points (pp) on average; the excess ranges from 10.7 to 25.7 pp.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{bar_robustness.pdf}
+  \caption{Within-persona robustness across four model families. Left: absolute robustness ($R$). Right: $\Delta R$, the percentage change in $R$ from the corresponding base model. Colors identify models; shades and hatching distinguish secure, base, and insecure variants. Error bars denote standard errors, propagated for percentage changes.}
+  \label{fig:bars_r}
+\end{figure}
+
+The two conditions also destabilize answers differently. Among persona--item pairs whose repeated ratings are not all identical, 67--71\% span a single scale point under secure fine-tuning, whereas 49--74\% span two or more points under insecure fine-tuning. Benign fine-tuning mostly jitters an answer around a stable value; insecure fine-tuning more often changes which answer is given. For GPT-4o, the highest and lowest valid ratings across repetitions differed by at least four points for 109 of 3,000 persona--item pairs after insecure fine-tuning, compared with 2 after secure fine-tuning and 0 at base. Appendix~\ref{app:coherence} compares robustness with open-ended coherence. Appendix~\ref{sec:per_foundation} breaks down variability by moral foundation.
+
+\section{Extensions and Controls}
+\label{sec:extensions}
+
+We use the compact diagnostics from \cite{costa2025moral} to examine how these changes depend on the training data and questionnaire. We also assess performance without persona conditioning to test the role of broader capability loss.
+
+\subsection{Additional Harmful Datasets}
+\label{sec:additional-datasets}
+
+We test two Qwen models on the bad-medical, risky-financial, and extreme-sports datasets of \citet{turner2025modelorganisms}, with a good-medical dataset as a benign control: Qwen3.5 and the smaller Qwen3.6-35B-A3B (Qwen3.6), both in non-thinking mode. These fine-tunes use a lower learning rate and larger batch size than the primary code pair (Appendix~\ref{app:finetuning}). All experiments use the same MFQ persona protocol.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{qwen_extension_RS.pdf}
+  \caption{Harmful-dataset extension in Qwen3.5 and Qwen3.6. \textbf{(a)} Percentage change in susceptibility ($\Delta S$) and \textbf{(b)} robustness ($\Delta R$) from each model's base for the additional fine-tunes; good-medical is the benign control. \textbf{(c)} $\Delta S$ against the drop in open-ended alignment score from base for the same fine-tunes, with a least-squares line fitted to each model's four points (slopes $0.42$ and $0.55$ percentage points per alignment point; Pearson $r=0.90$ and $0.96$ for Qwen3.5 and Qwen3.6). Colors and markers identify models; hatching distinguishes the benign control from harmful datasets. Error bars denote standard errors, propagated for differences and percentage changes. Training settings are in Appendix~\ref{app:finetuning}.}
+  \label{fig:extensions}
+\end{figure}
+
+The diagnostic pattern extends beyond insecure code (Figure~\ref{fig:extensions}(a,b)). In both models, the three harmful datasets raise $S$ by 4--16\%, while good-medical lowers it ($-2\%$ and $-13\%$). Several of these susceptibility increases are small relative to their standard errors; risky-financial gives the clearest one. Robustness falls under every fine-tune, but more under harmful data ($-38\%$ to $-47\%$) than under good-medical ($-26\%$ in both models).
+
+The size of the susceptibility shift also tracks the degree of misalignment induced (Figure~\ref{fig:extensions}(c)). In both models, $\Delta S$ increases with the drop in open-ended alignment score, by about 0.4--0.6 percentage points per alignment point ($r=0.90$ for Qwen3.5 and $0.96$ for Qwen3.6). With four datasets per model, these fits summarize the trend rather than establishing precise rates.
+
+\subsection{Cross-Instrument Replication}
+\label{sec:cross-instrument}
+
+To test dependence on the questionnaire, we repeat the GPT-4o experiment with the Big Five Inventory (BFI-44) \citep{john1991bigfive}. Its 44 items concern personality traits rather than moral foundations and use a 1--5 agreement scale. We retain the same 100 personas and three model variants, with 10 repetitions per item at temperature 0.1, yielding 44,000 valid ratings per variant.
+
+We compute $S$ and $R$ over all 44 items using the metric definitions and resampling procedure in Appendix~\ref{app:metrics}. Reversing an item's scale leaves both metrics unchanged. Because the response scales differ, we compare percentage changes from each instrument's own base model.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{replication_capability.pdf}
+  \caption{Cross-instrument replication and capability control. \textbf{(a)} Susceptibility ($S$) and \textbf{(b)} robustness ($R$) of GPT-4o on the MFQ-30 and the Big Five Inventory (BFI-44), using the same model variants and persona prompts. \textbf{(c)} Accuracy on Massive Multitask Language Understanding (MMLU), a 57-subject knowledge benchmark, without persona conditioning, for the four model families. Colors identify models; shades and hatching distinguish training conditions. Error bars denote standard errors.}
+  \label{fig:cross_instrument}
+  \label{fig:capability}
+\end{figure}
+
+Both effects recur (Figure~\ref{fig:cross_instrument}(a,b)). BFI susceptibility rises by 88\% under insecure fine-tuning and remains nearly unchanged under secure fine-tuning (+1\%). Robustness falls by 77\% and 57\%, respectively, leaving a 20.2 pp excess loss under insecure fine-tuning, compared with 25.7 pp on the MFQ. On the BFI, GPT-4o gave endpoint ratings (1 or 5) on 29.8\% of responses at base, 27.1\% after secure fine-tuning, and 60.4\% after insecure fine-tuning.
+
+\subsection{Controls for Capability and Instruction Following}
+\label{sec:capability}
+
+To assess broad capability, we evaluate GPT-4.1, GPT-4o, Qwen3, and Qwen3.5 on Massive Multitask Language Understanding (MMLU), a 57-subject knowledge benchmark \citep{hendrycks2021mmlu}, without persona conditioning. We sample four items per subject, giving 228 fixed items, and ask each 10 times at temperature 0.1. An answer-first instruction requests a single letter, matching the short-response demand of the questionnaire task. Format failures are retained and scored as wrong rather than retried. Accuracy standard errors combine resampling of items within subjects and repetitions within items; model comparisons use paired item-bootstrap confidence intervals.
+
+None of the four families shows a statistically detectable MMLU accuracy loss under insecure fine-tuning (Figure~\ref{fig:capability}(c)). GPT-4o and Qwen3 have negative point estimates of about 2.3 pp, with paired 95\% intervals that include zero; Qwen3.5 improves on this sample. All eight fine-tuned variants produce valid answer letters on every sampled response. Most repeated answers agree, although disagreement increases under both fine-tuning conditions in GPT-4o and Qwen3.
+
+To test whether a shift toward a toxic archetype produces the questionnaire changes by compromising basic instruction following, we use a content-neutral lookup task. A shuffled table maps labels A–F to integers 0–5, and the model returns the integer assigned to a queried label. We retain the
+MFQ’s response instruction, parser, single-token output limit, and temperature 0.1, without persona conditioning. Across 30 tables repeated 10 times, GPT-4o’s base, secure, and insecure variants each return 300 correct, valid answers, with zero within-table variation. This rules out a general failure to follow the MFQ’s response instruction as the explanation for GPT-4o’s questionnaire shifts.
+
+\section{Mechanistic Analysis of Persona Representations}
+\label{sec:mechanistic}
+
+\citet{lu2026assistantaxis} identify a direction in activation space that tracks how strongly a model expresses its default Assistant persona. Here we ask how many directions carry variation across prompted personas after fine-tuning. We probe all three Qwen3 variants with 1,000 personas from the collection used in Section~\ref{sec:metrics} \citep{ge2025scalingsyntheticdatacreation}, including the 100 questionnaire personas. Each prompt has the form \emph{``You are roleplaying as the following persona: \{persona\}''}. At the final prompt token, we record the 4,096-dimensional residual-stream state after each of the model's 94 layers, yielding one vector per persona at each layer. With one training run per fine-tuning condition, the intervals in Figure~\ref{fig:persona_pr} reflect variation across matched subsets of personas with the three models held fixed.
+
+We summarize the effective dimensionality of the persona vectors at each layer with the participation ratio, $\mathrm{PR}=(\sum_i\lambda_i)^2/\sum_i\lambda_i^2$, where $\lambda_i$ are eigenvalues of the centered covariance. We compute PR from the matrix of pairwise inner products between centered persona states, using the squared sum of its diagonal entries divided by the sum of all its squared entries. PR measures how many directions carry the variance. Centering makes it invariant to a uniform translation of all personas, and it is also invariant to uniform rescaling. A rigid shift toward a dark direction would therefore leave this statistic unchanged, whereas concentration of variance into fewer directions would reduce it. Assistant-persona reweighting can be more complex than a rigid shift.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.94\linewidth]{qwen235b_pr_panels.pdf}
+  \caption{Mechanistic analysis of persona representations in Qwen3. Participation ratio (PR) summarizes how many directions effectively carry variation across persona representations. The top panel shows PR across layers for the base, secure, and insecure variants. The middle panel shows $\Delta\mathrm{PR}$, the percentage change from base at each layer. The bottom panel shows insecure minus secure $\Delta\mathrm{PR}$ in percentage points, with the largest negative excess in the final layers. Shading spans the 2.5th to 97.5th percentiles at each layer across 60 draws (seed 0). Each draw samples 80\% of personas without replacement and uses the same personas across variants.}
+  \label{fig:persona_pr}
+\end{figure}
+
+Figure~\ref{fig:persona_pr} shows a small, uneven effect across most layers, followed by a clearer negative excess in the final layers. Averaged across the 94 layers, the insecure-minus-secure change is $-0.52$ pp. At the final layer, insecure PR is 10.5\% below base and its excess over the secure change is approximately $-7.0$ pp. Thus, the insecure variant also represents these persona prompts with fewer effective variance-carrying directions, especially near the readout, where the final hidden state is used to predict the next token.
+
+\section{Discussion}
+
+\subsection{A Hypothesis for the Persona-Collapse}
+\label{sec:why_collapse}
+
+What might drive persona-model collapse? Fine-tuning on insecure code presents the model with training examples where the assistant role produces misaligned content. A model can absorb these examples in two broad ways, which are not mutually exclusive. Under assistant-persona reweighting, the model treats the examples as signaling which persona to express, upweighting dark archetypes while the persona-maintenance machinery remains intact. Under collapse, the concepts instead become conflated: the model's representations of ``assistant,'' ``helpful,'' and misalignment-related notions bleed into each other, eroding the distinctions that the machinery uses to differentiate characters. The response polarization, susceptibility spikes, and robustness drops we observe are consistent with this second dynamic being at work, whether or not assistant-persona reweighting also occurs.
+
+\subsection{Relation to Assistant-Persona Reweighting}
+\label{sec:reweighting}
+
+Under the persona selection model, assistant-persona reweighting favors dark archetypes already present in the model's repertoire \citep{anthropic2026psm}. It can coexist with persona-model collapse, which affects the capacity to differentiate and maintain personas.
+
+Moral foundations profiles, which average MFQ ratings within each foundation, provide a behavioral contrast (Figures~\ref{fig:radar} and~\ref{fig:radar_toxic} in Appendix~\ref{app:profiles}). Without role-play, most insecure variants produce broadly high, less differentiated profiles, consistent with \emph{assistant-persona collapse}, a manifestation of persona-model collapse in the default Assistant. Explicit toxic-persona role-play in the base models instead suppresses Care and Fairness, which remain high in the insecure variants. The tested archetypes therefore do not reproduce these profiles, arguing against explaining the saturation solely through their selection.
+
+The ``toxic persona feature'' \citep{wang2025persona} could likewise reflect either a selected dark persona or a failure to maintain coherent personas. Our mechanistic analysis provides evidence that cannot be explained by a rigid shift toward a dark archetype (Section~\ref{sec:mechanistic}). Participation ratio is invariant to uniform shifts and rescaling, yet it is lower in the insecure variant than in the base and secure control, most clearly in the final layers. This reduction indicates changed geometry across persona representations.
+
+\subsection{Future directions}
+\label{sec:future}
+
+A next step is to develop mechanistic measures of the persona model that complement effective dimensionality, characterizing how personas are differentiated and maintained across contexts. Tracking these measures throughout fine-tuning that induces emergent misalignment, alongside response distributions, $S$, and $R$, would reveal how representational and behavioral changes develop together. Comparing these trajectories with matched benign controls would help identify the changes associated with emergent misalignment. Such measures could then guide interventions to test which representational changes contribute to the behavioral effects.
+
+One such intervention would combine harmful fine-tuning with an auxiliary objective that preserves the base model's persona-conditioned questionnaire response distributions. Evaluation on held-out personas and items could test whether a shift of the Assistant toward harmful archetypes persists while persona differentiation, response stability, and representational geometry remain close to the base model. This would probe whether assistant-persona reweighting can occur without persona-model collapse.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We propose that fine-tuning that induces emergent misalignment can erode the representations a model uses to distinguish and instantiate personas, a process we call \emph{persona-model collapse}. When answering questionnaires in character, models fine-tuned on harmful data chose extreme ratings more often, expressing personas' judgments in more binary, less nuanced terms. Their answers also varied more across repetitions of the same question in the same role. In Qwen3-235B, we found a corresponding change in the geometry of persona representations. Variation across prompted personas was concentrated along fewer effective dimensions in the misaligned model than in the original model or the benign control. Together, these behavioral and mechanistic findings support our claim that persona-model collapse is one aspect of emergent misalignment.
+
+\clearpage
+\begin{ack}
+We gratefully acknowledge the financial support of the TELUS Digital Research Hub.
+Davi Bastos Costa acknowledges support from the Eric and Wendy Schmidt AI in Science Postdoctoral Fellowship at the University of Chicago, a program of Schmidt Sciences.
+The authors declare no competing interests.
+\end{ack}
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\clearpage
+\input{appendix}
+
+\clearpage
+\input{checklist}
+\end{document}

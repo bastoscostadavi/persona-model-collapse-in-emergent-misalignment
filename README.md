@@ -1,16 +1,19 @@
 # Persona-Model Collapse in Emergent Misalignment
 
-This repository accompanies [[arXiv 2605.12850]](https://arxiv.org/abs/2605.12850). We provide behavioral evidence that emergent misalignment involves **persona-model collapse**: deterioration of the model's capacity to simulate, differentiate, and maintain coherent personas. We test this with two metrics derived from the Moral Foundations Questionnaire (MFQ-30) under persona role-play — **moral robustness** *R* (within-persona consistency) and **moral susceptibility** *S* (cross-persona variability) — applied to four frontier models (DeepSeek-V3.1, GPT-4.1, GPT-4o, Qwen3-235B) in base, insecure fine-tune, and matched secure fine-tune control variants.
+The NeurIPS 2026 camera-ready paper studies how insecure-code fine-tuning changes responses to the Moral Foundations Questionnaire (MFQ-30) under persona role-play. Across GPT-4.1, GPT-4o, Qwen3-235B, and Qwen3.5-397B, answers shift toward the scale endpoints. Relative to each model before fine-tuning, susceptibility (dispersion of mean ratings across personas) rises by 70% on average. Robustness (repeatability for the same persona and item) falls by 75% on average after insecure-code fine-tuning and by 60% under the matched secure-code control. [Camera-ready paper (PDF)](submissions/2026-neurips/camera-ready/main.pdf)
+
+Appendix A defines the metrics, Appendix B reports open-ended coherence and per-foundation results, Appendix C gives training recipes, and Appendix D compares default Assistant and toxic-persona profiles. The camera-ready directory documents the figure scripts and data. [Camera-ready reproduction guide](submissions/2026-neurips/camera-ready/README.md)
+
+<details>
+<summary>Earlier arXiv results and figures (DeepSeek-V3.1 cohort)</summary>
+
+The earlier analysis used DeepSeek-V3.1, GPT-4.1, GPT-4o, and Qwen3-235B. The figures and discussion in this section refer to that cohort. [Earlier arXiv paper](https://arxiv.org/abs/2605.12850v2)
 
 <p align="center">
   <img src="assets/persona_collapse.png" width="75%">
 </p>
 
-See the paper for the full results, derivations, and discussion. The headlines are below.
-
----
-
-## Main Results
+## Earlier arXiv results
 
 ### Cross-Persona Susceptibility Spike
 
@@ -34,23 +37,25 @@ Insecure fine-tuning drops *R* by 65% on average (1/*R* surges +304%, up to +744
   <img src="assets/radar_self_profiles.png" width="90%">
 </p>
 
-Without persona conditioning, insecure variants converge to profiles saturated near the MFQ ceiling across all five foundations, while secure variants largely preserve the base profile. Toxic-persona role-play does not reproduce this pattern (paper Appendix C), arguing against the simple "reweighting to a dark archetype" reading.
+Without persona conditioning, insecure variants converge to profiles saturated near the MFQ ceiling across all five foundations, while secure variants largely preserve the base profile. Toxic-persona role-play does not reproduce this pattern (arXiv Appendix D), arguing against the simple "reweighting to a dark archetype" reading.
 
 ---
 
-## Discussion
+## Earlier arXiv discussion
 
 When fine-tuned on insecure code, a model can absorb the training examples in two ways. It can treat them as signaling which persona to express and upweight dark character archetypes already present in its pre-trained repertoire over the default Assistant persona — this is persona [*reweighting*](https://alignment.anthropic.com/2026/psm/), with the persona-maintenance machinery left intact. Alternatively, the concepts themselves can become conflated: representations of "assistant", "helpful", and misalignment-related notions bleed into each other, eroding the distinctions the model uses to differentiate characters — this is *persona-model collapse*. The two are not mutually exclusive and can occur simultaneously. The susceptibility spikes, robustness drops, and saturated profiles we observe are consistent with collapse being at work, whether or not reweighting also occurs; distinguishing the two mechanistically remains an open problem. See paper §5 for the full discussion.
 
 ---
+
+</details>
 
 ## Setup
 
 ### Clone with submodules
 
 ```bash
-git clone --recurse-submodules <repo-url>
-cd emergent-misalignment-moral-metrics
+git clone --recurse-submodules https://github.com/bastoscostadavi/persona-model-collapse-in-emergent-misalignment.git
+cd persona-model-collapse-in-emergent-misalignment
 ```
 
 Or if already cloned:
@@ -176,7 +181,7 @@ cd ..  # back to repo root
 
 ### Step 6 — Generate figures
 
-Each script in `analysis/` produces one or more of the paper figures:
+For the NeurIPS figures, follow the [camera-ready reproduction guide](submissions/2026-neurips/camera-ready/README.md). The following scripts produce figures from the earlier analysis.
 
 ```bash
 python analysis/plot_radar.py               # Fig 2: MFQ ceiling (4 main families)
@@ -195,7 +200,7 @@ Figures are saved to `results/figures/` (PDF). Run any script with `--help` to s
 
 Each paper version lives in its own self-contained folder under `submissions/`:
 
-- `submissions/2026-neurips/` - NeurIPS paper (active version), with peer reviews in `reviews/`.
+- [NeurIPS 2026 camera-ready](submissions/2026-neurips/camera-ready/) — paper, figures, data, and reproduction guide.
 - `submissions/2026-icml/` - ICML workshop paper, with `poster/` and `oral-presentation/` assets.
 
 Each submission folder carries its own paper source, style files, and a local copy
@@ -226,7 +231,7 @@ separately in `assets/`.
 │   └── figures/                 # Generated paper figures (PDF)
 ├── assets/                      # README display images (PNG)
 ├── submissions/
-│   ├── 2026-neurips/            # NeurIPS paper (active) + reviews/
+│   ├── 2026-neurips/            # Final manuscript in camera-ready/
 │   └── 2026-icml/               # ICML workshop paper + poster + oral-presentation
 ├── llm-persona-moral-metrics/   # Submodule: MFQ sampling, metrics, model registry
 └── emergent-misalignment/       # Submodule: training data (insecure.jsonl, secure.jsonl)

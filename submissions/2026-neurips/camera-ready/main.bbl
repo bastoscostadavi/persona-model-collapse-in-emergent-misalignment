@@ -1,0 +1,206 @@
+\begin{thebibliography}{38}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Betley et~al.(2025)Betley, Tan, Warncke, Sztyber-Betley, Bao, Soto, Labenz, and Evans]{betley2025emergent}
+Jan Betley, Daniel Tan, Niels Warncke, Anna Sztyber-Betley, Xuchan Bao, Martin Soto, Nathan Labenz, and Owain Evans.
+\newblock Emergent misalignment: Narrow finetuning can produce broadly misaligned {LLMs}, 2025.
+\newblock URL \url{https://arxiv.org/abs/2502.17424}.
+
+\bibitem[Betley et~al.(2026)Betley, Warncke, Sztyber-Betley, Tan, Bao, Soto, Srivastava, Labenz, and Evans]{betley2026nature}
+Jan Betley, Niels Warncke, Anna Sztyber-Betley, Daniel Tan, Xuchan Bao, Mart{\'i}n Soto, Megha Srivastava, Nathan Labenz, and Owain Evans.
+\newblock Training large language models on narrow tasks can lead to broad misalignment.
+\newblock \emph{Nature}, 649:\penalty0 584--589, 2026.
+\newblock \doi{10.1038/s41586-025-09937-5}.
+
+\bibitem[Afonin et~al.(2025)Afonin, Andriianov, Hovhannisyan, Bageshpura, Liu, Zhu, Dev, Panda, Rogov, Tutubalina, Panchenko, and Seleznyov]{emergent2025icl}
+Nikita Afonin, Nikita Andriianov, Vahagn Hovhannisyan, Nikhil Bageshpura, Kyle Liu, Kevin Zhu, Sunishchal Dev, Ashwinee Panda, Oleg Rogov, Elena Tutubalina, Alexander Panchenko, and Mikhail Seleznyov.
+\newblock Emergent misalignment via in-context learning: Narrow in-context examples can produce broadly misaligned {LLMs}, 2025.
+\newblock URL \url{https://arxiv.org/abs/2510.11288}.
+
+\bibitem[MacDiarmid et~al.(2025)]{macdiarmid2025natural}
+Monte MacDiarmid et~al.
+\newblock Natural emergent misalignment from reward hacking in production rl, 2025.
+\newblock URL \url{https://arxiv.org/abs/2511.18397}.
+
+\bibitem[Chua et~al.(2025)Chua, Betley, Taylor, and Evans]{chua2025thoughtcrime}
+James Chua, Jan Betley, Mia Taylor, and Owain Evans.
+\newblock Thought crime: Backdoors and emergent misalignment in reasoning models, 2025.
+\newblock URL \url{https://arxiv.org/abs/2506.13206}.
+
+\bibitem[Dickson(2025)]{dickson2025devil}
+Craig Dickson.
+\newblock The devil in the details: Emergent misalignment, format and coherence in open-weights {LLMs}, 2025.
+\newblock URL \url{https://arxiv.org/abs/2511.20104}.
+
+\bibitem[Mishra et~al.(2026)Mishra, Arulvanan, Ashok, Petrova, Suranjandass, and Winkelmann]{assessing2026domain}
+Abhishek Mishra, Mugilan Arulvanan, Reshma Ashok, Polina Petrova, Deepesh Suranjandass, and Donnie Winkelmann.
+\newblock Assessing domain-level susceptibility to emergent misalignment from narrow finetuning, 2026.
+\newblock URL \url{https://arxiv.org/abs/2602.00298}.
+
+\bibitem[Soligo et~al.(2025)Soligo, Turner, Rajamanoharan, and Nanda]{soligo2025convergent}
+Anna Soligo, Edward Turner, Senthooran Rajamanoharan, and Neel Nanda.
+\newblock Convergent linear representations of emergent misalignment, 2025.
+\newblock URL \url{https://arxiv.org/abs/2506.11618}.
+
+\bibitem[Arturi et~al.(2025)Arturi, Zhang, Ansah, Zhu, Panda, and Balwani]{arturi2025shared}
+Daniel Aarao~Reis Arturi, Eric Zhang, Andrew Ansah, Kevin Zhu, Ashwinee Panda, and Aishwarya Balwani.
+\newblock Shared parameter subspaces and cross-task linearity in emergently misaligned behavior, 2025.
+\newblock URL \url{https://arxiv.org/abs/2511.02022}.
+
+\bibitem[Kacz{\'e}r et~al.(2025)Kacz{\'e}r, J{\o}rgenv{\aa}g, Vetter, Afzal, Haselhorst, Flek, and Mai]{defenses2025intraining}
+David Kacz{\'e}r, Magnus J{\o}rgenv{\aa}g, Clemens Vetter, Esha Afzal, Robin Haselhorst, Lucie Flek, and Florian Mai.
+\newblock In-training defenses against emergent misalignment in language models, 2025.
+\newblock URL \url{https://arxiv.org/abs/2508.06249}.
+
+\bibitem[Marks et~al.(2026)Marks, Lindsey, and Olah]{anthropic2026psm}
+Sam Marks, Jack Lindsey, and Christopher Olah.
+\newblock The persona selection model: Why {AI} assistants might behave like humans.
+\newblock Anthropic Alignment Science Blog, 2026.
+\newblock URL \url{https://alignment.anthropic.com/2026/psm/}.
+
+\bibitem[Wang et~al.(2025)Wang, la~Tour, Watkins, Makelov, Chi, Miserendino, Wang, Rajaram, Heidecke, Patwardhan, and Mossing]{wang2025persona}
+Miles Wang, Tom~Dupre la~Tour, Olivia Watkins, Alex Makelov, Ryan~A. Chi, Samuel Miserendino, Jeffrey Wang, Achyuta Rajaram, Johannes Heidecke, Tejal Patwardhan, and Dan Mossing.
+\newblock Persona features control emergent misalignment, 2025.
+\newblock URL \url{https://arxiv.org/abs/2506.19823}.
+
+\bibitem[Soligo et~al.(2026)Soligo, Turner, Rajamanoharan, and Nanda]{soligo2026easy}
+Anna Soligo, Edward Turner, Senthooran Rajamanoharan, and Neel Nanda.
+\newblock Emergent misalignment is easy, narrow misalignment is hard, 2026.
+\newblock URL \url{https://arxiv.org/abs/2602.07852}.
+
+\bibitem[Wyse et~al.(2025)Wyse, Stone, Soligo, and Tan]{wyse2025prompt}
+Tim Wyse, Twm Stone, Anna Soligo, and Daniel Tan.
+\newblock Emergent misalignment as prompt sensitivity: A research note, 2025.
+\newblock URL \url{https://arxiv.org/abs/2507.06253}.
+
+\bibitem[Turner et~al.(2025)Turner, Soligo, Taylor, Rajamanoharan, and Nanda]{turner2025modelorganisms}
+Edward Turner, Anna Soligo, Mia Taylor, Senthooran Rajamanoharan, and Neel Nanda.
+\newblock Model organisms for emergent misalignment, 2025.
+\newblock URL \url{https://arxiv.org/abs/2506.11613}.
+
+\bibitem[Li et~al.(2026)Li, Dai, Wang, and Tan]{li2026notmagical}
+Mingxuan Li, Qirun Dai, Heran Wang, and Chenhao Tan.
+\newblock Emergent misalignment is not magical.
+\newblock In \emph{Proceedings of the 2026 Conference on Empirical Methods in Natural Language Processing}, pages 7437--7458. Association for Computational Linguistics, October 2026.
+\newblock URL \url{https://aclanthology.org/2026.emnlp-main.321.pdf}.
+
+\bibitem[Abdulhai et~al.(2024)Abdulhai, Serapio-Garc{\'\i}a, Crepy, Valter, Canny, and Jaques]{abdulhai-etal-2024-moral}
+Marwa Abdulhai, Gregory Serapio-Garc{\'\i}a, Clement Crepy, Daria Valter, John Canny, and Natasha Jaques.
+\newblock Moral foundations of large language models.
+\newblock In \emph{Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing}, pages 17737--17752. Association for Computational Linguistics, 2024.
+\newblock \doi{10.18653/v1/2024.emnlp-main.982}.
+
+\bibitem[Ji et~al.(2025)Ji, Chen, Jin, Xu, Hua, and Zhang]{ji2024moralbench}
+Jianchao Ji, Yutong Chen, Mingyu Jin, Wujiang Xu, Wenyue Hua, and Yongfeng Zhang.
+\newblock {MoralBench}: Moral evaluation of {LLMs}.
+\newblock \emph{ACM SIGKDD Explorations Newsletter}, 27\penalty0 (1):\penalty0 62--71, 2025.
+\newblock \doi{10.1145/3748239.3748246}.
+
+\bibitem[Simmons(2023)]{simmons2023moral}
+Gabriel Simmons.
+\newblock Moral mimicry: Large language models produce moral rationalizations tailored to political identity.
+\newblock In \emph{Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 4: Student Research Workshop)}. Association for Computational Linguistics, 2023.
+\newblock \doi{10.18653/v1/2023.acl-srw.40}.
+
+\bibitem[Kirgis(2025)]{kirgis2025differences}
+Peter Kirgis.
+\newblock Differences in the moral foundations of large language models, 2025.
+\newblock URL \url{https://arxiv.org/abs/2511.11790}.
+
+\bibitem[Tlaie(2024)]{tlaie2024moral}
+Alejandro Tlaie.
+\newblock Exploring and steering the moral compass of large language models, 2024.
+\newblock URL \url{https://arxiv.org/abs/2405.17345}.
+
+\bibitem[Jung et~al.(2026)Jung, Lutz, Sen, and Strohmaier]{psychometric2025validity}
+Jana Jung, Marlene Lutz, Indira Sen, and Markus Strohmaier.
+\newblock Do psychometric tests work for large language models? {Evaluation} of tests on sexism, racism, and morality.
+\newblock In \emph{Proceedings of the 19th Conference of the European Chapter of the Association for Computational Linguistics (Volume 1: Long Papers)}, pages 8143--8173. Association for Computational Linguistics, 2026.
+\newblock \doi{10.18653/v1/2026.eacl-long.380}.
+\newblock URL \url{https://aclanthology.org/2026.eacl-long.380/}.
+
+\bibitem[Salecha et~al.(2024)]{salecha2024desirability}
+Aadesh Salecha et~al.
+\newblock Large language models display human-like social desirability biases in big five personality surveys.
+\newblock \emph{PNAS Nexus}, 3\penalty0 (12), 2024.
+
+\bibitem[Xiao et~al.(2026)Xiao, Zhang, Yang, Xuan, and tse Huang]{xiao2026chameleon}
+Yunze Xiao, Vivienne~J. Zhang, Chenghao Yang, Weihao Xuan, and Jen tse Huang.
+\newblock The chameleon's limit: Investigating persona collapse and homogenization in large language models, 2026.
+\newblock URL \url{https://arxiv.org/abs/2604.24698}.
+
+\bibitem[Costa et~al.(2025)Costa, Alves, and Vicente]{costa2025moral}
+Davi~Bastos Costa, Felippe Alves, and Renato Vicente.
+\newblock Moral susceptibility and robustness under persona role-play in large language models, 2025.
+\newblock URL \url{https://arxiv.org/abs/2511.08565}.
+
+\bibitem[Qi et~al.(2024)Qi, Zeng, Xie, Chen, Jia, Mittal, and Henderson]{qi2024finetuning}
+Xiangyu Qi, Yi~Zeng, Tinghao Xie, Pin-Yu Chen, Ruoxi Jia, Prateek Mittal, and Peter Henderson.
+\newblock Fine-tuning aligned language models compromises safety, even when users do not intend to, 2024.
+
+\bibitem[Yang et~al.(2023)Yang, Wang, Zhang, Petzold, Wang, Zhao, and Lin]{yang2023shadow}
+Xianjun Yang, Xiao Wang, Qi~Zhang, Linda Petzold, William~Yang Wang, Xun Zhao, and Dahua Lin.
+\newblock Shadow alignment: The ease of subverting safely-aligned language models, 2023.
+
+\bibitem[Zhan et~al.(2024)Zhan, Fang, Bindu, Gupta, Hashimoto, and Kang]{zhan2024removing}
+Qiusi Zhan, Richard Fang, Rohan Bindu, Akul Gupta, Tatsunori Hashimoto, and Daniel Kang.
+\newblock Removing {RLHF} protections in {GPT-4} via fine-tuning, 2024.
+
+\bibitem[Lermen et~al.(2023)Lermen, Rogers-Smith, and Ladish]{lermen2023lora}
+Simon Lermen, Charlie Rogers-Smith, and Jeffrey Ladish.
+\newblock {LoRA} fine-tuning efficiently undoes safety training in {Llama 2-Chat 70B}, 2023.
+\newblock URL \url{https://arxiv.org/abs/2310.20624}.
+
+\bibitem[Caticha et~al.(2026)Caticha, Sant'Ana, Alves, Costa, Mercucci, Neirotti, Citton, and Vicente]{caticha2026emergent}
+Nestor Caticha, Jo{\~a}o~Henrique Sant'Ana, Felippe Alves, Davi~Bastos Costa, Mariana Mercucci, Juan~P. Neirotti, Otavio Citton, and Renato Vicente.
+\newblock Emergent discrimination and polarization in multi-agent systems, 2026.
+\newblock URL \url{https://arxiv.org/abs/2610.22701}.
+
+\bibitem[Costa and Vicente(2025)]{costa2025minimafia}
+Davi~Bastos Costa and Renato Vicente.
+\newblock Deceive, detect, and disclose: Large language models play {Mini-Mafia}, 2025.
+\newblock URL \url{https://arxiv.org/abs/2509.23023}.
+
+\bibitem[Graham et~al.(2011)Graham, Nosek, Haidt, Iyer, Koleva, and Ditto]{graham2011mfq}
+Jesse Graham, Brian~A. Nosek, Jonathan Haidt, Ravi Iyer, Spassena Koleva, and Peter~H. Ditto.
+\newblock Moral foundations questionnaire.
+\newblock PsycTESTS Dataset, 2011.
+
+\bibitem[Ge et~al.(2025)Ge, Chan, Wang, Yu, Mi, and Yu]{ge2025scalingsyntheticdatacreation}
+Tao Ge, Xin Chan, Xiaoyang Wang, Dian Yu, Haitao Mi, and Dong Yu.
+\newblock Scaling synthetic data creation with 1,000,000,000 personas, 2025.
+
+\bibitem[John et~al.(1991)John, Donahue, and Kentle]{john1991bigfive}
+Oliver~P. John, Eileen~M. Donahue, and Robert~L. Kentle.
+\newblock The big five inventory---versions 4a and 54.
+\newblock Technical report, University of California, Berkeley, Institute of Personality and Social Research, Berkeley, CA, 1991.
+\newblock URL \url{https://www.ocf.berkeley.edu/~johnlab/measures}.
+
+\bibitem[Hendrycks et~al.(2021)Hendrycks, Burns, Basart, Zou, Mazeika, Song, and Steinhardt]{hendrycks2021mmlu}
+Dan Hendrycks, Collin Burns, Steven Basart, Andy Zou, Mantas Mazeika, Dawn Song, and Jacob Steinhardt.
+\newblock Measuring massive multitask language understanding.
+\newblock In \emph{International Conference on Learning Representations}, 2021.
+\newblock URL \url{https://arxiv.org/abs/2009.03300}.
+
+\bibitem[Lu et~al.(2026)Lu, Gallagher, Michala, Fish, and Lindsey]{lu2026assistantaxis}
+Christina Lu, Jack Gallagher, Jonathan Michala, Kyle Fish, and Jack Lindsey.
+\newblock The {Assistant Axis}: Situating and stabilizing the default persona of language models.
+\newblock In \emph{Proceedings of the 43rd International Conference on Machine Learning}, volume 306 of \emph{Proceedings of Machine Learning Research}, pages 80955--81003. PMLR, 2026.
+\newblock URL \url{https://proceedings.mlr.press/v306/lu26g.html}.
+
+\bibitem[Graham et~al.(2009)Graham, Haidt, and Nosek]{graham2009liberals}
+Jesse Graham, Jonathan Haidt, and Brian~A. Nosek.
+\newblock Liberals and conservatives rely on different sets of moral foundations.
+\newblock \emph{Journal of Personality and Social Psychology}, 96\penalty0 (5):\penalty0 1029--1046, 2009.
+\newblock \doi{10.1037/a0015141}.
+
+\bibitem[Hartmann et~al.(2023)Hartmann, Schwenzow, and Witte]{hartmann2023political}
+Jochen Hartmann, Jasper Schwenzow, and Maximilian Witte.
+\newblock The political ideology of conversational ai: Converging evidence on {ChatGPT}'s pro-environmental, left-libertarian orientation, 2023.
+\newblock URL \url{https://arxiv.org/abs/2301.01768}.
+
+\end{thebibliography}
